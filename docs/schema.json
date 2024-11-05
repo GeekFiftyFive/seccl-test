@@ -1,0 +1,35 @@
+{
+	"openapi": "3.0.0",
+	"info": {
+		"title": "Seccl Test API",
+		"description": "An API for testing prospective Seccl Employees",
+		"version": "1.0.0"
+	},
+	"paths": {
+		"/": {
+			"get": {
+				"summary": "Hello world",
+				"description": "Returns 'Hello World!'",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"text/plain": {
+								"schema": {
+									"type": "string",
+									"example": "Hello World!"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {}
+	},
+	"tags": [],
+	"security": []
+}
