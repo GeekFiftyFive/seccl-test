@@ -1,6 +1,6 @@
 {
 	"name": "seccl-test",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"main": "index.js",
 	"scripts": {
 		"build": "npm run generate:schema && rimraf dist && tsc --project tsconfig.build.json && tscpaths -p tsconfig.json -s ./src -o ./dist",
