@@ -1,11 +1,10 @@
 {
 	"name": "seccl-test",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"main": "index.js",
 	"scripts": {
 		"build": "npm run generate:schema && rimraf dist && tsc --project tsconfig.build.json && tscpaths -p tsconfig.json -s ./src -o ./dist",
 		"dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only src/server.ts",
-		"generate:schema": "openapi-typescript https://catfact.ninja/docs/api-docs.json -o src/lib/catfacts/schema.d.ts",
 		"lint": "biome check --write",
 		"start": "node dist/server.js",
 		"test": "npm run test:unit && npm run test:integration",
