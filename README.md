@@ -4,7 +4,7 @@
 
 ### Requirements
 
-* We want to create an endpoint that returns an exchange rate pairing.
+* We want to create an endpoint that returns an up-to-date exchange rate pairing.
 
 * User can specify two currencies to return the exchange rate between them.
 
