@@ -1,7 +1,7 @@
 import { rootHandler } from "@app/handlers/root.handler";
 import express from "express";
 import { loggerInstance } from "./logger";
-import { exchangeHandler } from "./handlers/exchange.handler";
+import { exchangeHandler } from "@app/handlers/exchange.handler";
 
 export const app = express();
 

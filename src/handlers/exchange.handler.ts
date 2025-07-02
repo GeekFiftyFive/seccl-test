@@ -23,12 +23,30 @@ export const exchangeHandler = async (req: Request, res: Response) => {
 
   const { baseCode, exchangeCode } = parsedQueryParams.data;
 
-  const exchangeRate = await exchangeApi.getExchangeRate(
-    baseCode,
-    exchangeCode
-  );
+  try {
+    const exchangeRate = await exchangeApi.getExchangeRate(
+      baseCode,
+      exchangeCode
+    );
 
-  res.send({
-    exchangeRate,
-  });
+    if (exchangeRate === null) {
+      res.status(404).send({
+        message: "Exchange rate not found",
+      });
+      return;
+    }
+
+    res.send({
+      exchangeRate,
+    });
+  } catch (e) {
+    logger.error({
+      message: "Failed to get exchange rate",
+      error: e,
+    });
+    res.status(500).send({
+      message: "Failed to get exchange rate",
+      error: e,
+    });
+  }
 };

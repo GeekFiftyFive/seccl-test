@@ -30,6 +30,11 @@ export class ExchangeApiClient {
     }
 
     if (!this.isSuccessResponse(response.data)) {
+      logger.error({
+        message: "Failed to get exchange rate",
+        response: response.data,
+        status: response.status,
+      });
       throw new Error(response.data["error-type"]);
     }
 

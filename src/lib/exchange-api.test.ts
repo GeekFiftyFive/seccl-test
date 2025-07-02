@@ -47,12 +47,12 @@ describe("ExchangeApi", () => {
   it("should exponentially backoff on 429 responses", async () => {
     mock.onGet("https://open.er-api.com/v6/latest/GBP").reply(429, {
       result: "error",
-      "error-type": "too-many-requests",
+      "error-type": "quota-reached",
     });
 
     await expect(
       exchangeApiClient.getExchangeRate("GBP", "USD")
-    ).rejects.toThrow("too-many-requests");
+    ).rejects.toThrow("quota-reached");
     expect(mock.history.get.length).toBe(3);
     expect(retry.retry).toHaveBeenCalledTimes(1);
   });
