@@ -32,9 +32,9 @@ export class ExchangeApiClient {
     if (!this.isSuccessResponse(response.data)) {
       logger.error({
         message: "Failed to get exchange rate",
-        response: response.data,
         status: response.status,
       });
+      logger.debug({ response: response.data });
       throw new Error(response.data["error-type"]);
     }
 
@@ -42,9 +42,10 @@ export class ExchangeApiClient {
     if (!parsedResponse.success) {
       logger.error({
         message: "Received invalid response from exchange API",
-        response,
-        parsedResponse,
+        status: response.status,
+        issues: parsedResponse.error.issues,
       });
+      logger.debug({ response: response.data });
       throw new Error("Received invalid response from exchange API");
     }
 
@@ -52,8 +53,9 @@ export class ExchangeApiClient {
     if (rate === undefined) {
       logger.warn({
         message: "Exchange rate not found",
-        response: response.data,
+        status: response.status,
       });
+      logger.debug({ response: response.data });
       return null;
     }
 

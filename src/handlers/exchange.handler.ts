@@ -5,17 +5,23 @@ import type { Request, Response } from "express";
 
 const exchangeApi = new ExchangeApiClient();
 
+enum ErrorMessage {
+  EXCHANGE_RATE_NOT_FOUND = "Exchange rate not found",
+  FAILED_TO_GET_EXCHANGE_RATE = "Failed to get exchange rate",
+  INVALID_QUERY_PARAMS = "Invalid query params",
+}
+
 export const exchangeHandler = async (req: Request, res: Response) => {
   logger.info({ message: "GET /exchange" });
   const parsedQueryParams = queryParamsSchema.safeParse(req.query);
 
   if (!parsedQueryParams.success) {
     logger.error({
-      message: "Invalid query params",
+      message: ErrorMessage.INVALID_QUERY_PARAMS,
       queryParams: parsedQueryParams,
     });
     res.status(400).send({
-      message: "Invalid query params",
+      message: ErrorMessage.INVALID_QUERY_PARAMS,
       issues: parsedQueryParams.error.issues,
     });
     return;
@@ -31,7 +37,7 @@ export const exchangeHandler = async (req: Request, res: Response) => {
 
     if (exchangeRate === null) {
       res.status(404).send({
-        message: "Exchange rate not found",
+        message: ErrorMessage.EXCHANGE_RATE_NOT_FOUND,
       });
       return;
     }
@@ -40,12 +46,18 @@ export const exchangeHandler = async (req: Request, res: Response) => {
       exchangeRate,
     });
   } catch (e) {
+    if ((e as Error).message === "unsupported-code") {
+      res.status(404).send({
+        message: ErrorMessage.EXCHANGE_RATE_NOT_FOUND,
+      });
+      return;
+    }
     logger.error({
-      message: "Failed to get exchange rate",
+      message: ErrorMessage.FAILED_TO_GET_EXCHANGE_RATE,
       error: e,
     });
     res.status(500).send({
-      message: "Failed to get exchange rate",
+      message: ErrorMessage.FAILED_TO_GET_EXCHANGE_RATE,
       error: e,
     });
   }
