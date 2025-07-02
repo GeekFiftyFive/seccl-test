@@ -1,9 +1,9 @@
-import { ExchangeApi } from "@app/lib/exchange-api";
+import { ExchangeApiClient } from "@app/lib/exchange-api";
 import { logger } from "@app/logger";
 import { queryParamsSchema } from "@app/schemas/queryParams.schema";
 import type { Request, Response } from "express";
 
-const exchangeApi = new ExchangeApi();
+const exchangeApi = new ExchangeApiClient();
 
 export const exchangeHandler = async (req: Request, res: Response) => {
   logger.info({ message: "GET /exchange" });

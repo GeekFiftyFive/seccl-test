@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { type AxiosError, type AxiosResponse } from "axios";
 import type { ExchangeRateModel } from "./interfaces/model";
 import type {
   ExchangeRateResponse,
@@ -6,8 +6,9 @@ import type {
 } from "./interfaces/response";
 import { exchangeApiSchema } from "../schemas/exchangeApiResponse.schema"; // TODO: Investigate failure to resolve @app/...
 import { logger } from "../logger";
+import { retry } from "../utils/retry";
 
-export class ExchangeApi {
+export class ExchangeApiClient {
   private readonly baseUrl: string = "https://open.er-api.com/v6/latest/";
 
   public async getExchangeRate(
@@ -15,14 +16,24 @@ export class ExchangeApi {
     exchangeCode: string
   ): Promise<ExchangeRateModel | null> {
     const url = `${this.baseUrl}${baseCode}`;
-    const response = (await axios.get(url)).data as ExchangeRateResponse;
 
-    if (!this.isSuccessResponse(response)) {
-      logger.warn({ message: "Base rate not found", response });
-      return null;
+    function isRetryable(e: unknown) {
+      return (e as AxiosError).response?.status === 429;
     }
 
-    const parsedResponse = exchangeApiSchema.safeParse(response);
+    let response: AxiosResponse<ExchangeRateResponse>;
+    try {
+      response = await retry(() => axios.get(url), 3, 1000, isRetryable);
+    } catch (e) {
+      response = (e as AxiosError)
+        .response as AxiosResponse<ExchangeRateResponse>;
+    }
+
+    if (!this.isSuccessResponse(response.data)) {
+      throw new Error(response.data["error-type"]);
+    }
+
+    const parsedResponse = exchangeApiSchema.safeParse(response.data);
     if (!parsedResponse.success) {
       logger.error({
         message: "Received invalid response from exchange API",
@@ -34,7 +45,10 @@ export class ExchangeApi {
 
     const rate = parsedResponse.data.rates[exchangeCode];
     if (rate === undefined) {
-      logger.warn({ message: "Exchange rate not found", response });
+      logger.warn({
+        message: "Exchange rate not found",
+        response: response.data,
+      });
       return null;
     }
 
