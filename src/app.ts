@@ -110,6 +110,38 @@ app.get("/", rootHandler);
  *                 error:
  *                   type: object
  *                   description: The error details
+ *       400:
+ *         description: Invalid query parameters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: The error message
+ *                 issues:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       code:
+ *                         type: string
+ *                         description: The error code
+ *                       expected:
+ *                         type: string
+ *                         description: The expected value
+ *                       received:
+ *                         type: string
+ *                         description: The received value
+ *                       path:
+ *                         type: array
+ *                         items:
+ *                           type: string
+ *                         description: The path to the error
+ *                       message:
+ *                         type: string
+ *                         description: The error message
  */
 app.get("/exchange", exchangeHandler);
 
