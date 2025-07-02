@@ -10,7 +10,7 @@ export async function retry<T>(
 ): Promise<T> {
   let attempt = 0;
   let lastError: unknown | undefined;
-  do {
+  while (true) {
     try {
       return await fn();
     } catch (e) {
@@ -21,7 +21,6 @@ export async function retry<T>(
       }
       await sleep(baseDelayMs * 2 ** (attempt - 1)); // TODO: Implement dithering
     }
-    // biome-ignore lint/correctness/noConstantCondition: We need to sleep whenever we retry, and this has to be the last thing in the loop
-  } while (true);
+  }
   throw lastError;
 }
