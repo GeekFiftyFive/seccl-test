@@ -1,8 +1,11 @@
+import { ExchangeApi } from "@app/lib/exchange-api";
 import { logger } from "@app/logger";
 import { queryParamsSchema } from "@app/schemas/queryParams.schema";
 import type { Request, Response } from "express";
 
-export const exchangeHandler = (req: Request, res: Response) => {
+const exchangeApi = new ExchangeApi();
+
+export const exchangeHandler = async (req: Request, res: Response) => {
   logger.info({ message: "GET /exchange" });
   const parsedQueryParams = queryParamsSchema.safeParse(req.query);
 
@@ -18,7 +21,14 @@ export const exchangeHandler = (req: Request, res: Response) => {
     return;
   }
 
+  const { baseCode, exchangeCode } = parsedQueryParams.data;
+
+  const exchangeRate = await exchangeApi.getExchangeRate(
+    baseCode,
+    exchangeCode
+  );
+
   res.send({
-    exchangeRate: { baseCode: "GBP", exchangeCode: "USD", rate: 1.23 },
+    exchangeRate,
   });
 };
